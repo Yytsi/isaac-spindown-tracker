@@ -1,0 +1,25 @@
+user: Player
+
+browser: "Static browser app" {
+  ui: "index.html"
+  styles: "src/styles.css"
+  logic: "src/app.js"
+  catalog: "src/data/items.js"
+  sprites: "assets/collectibles/*.png"
+}
+
+source: "Source data" {
+  csv: "data/spindown-items.csv"
+}
+
+build: "Data build" {
+  script: "scripts/build-data.mjs"
+}
+
+user -> browser.ui: "types visible item"
+browser.logic -> browser.catalog: "searches names + fuzzy match"
+browser.logic -> browser.sprites: "renders item icons"
+browser.logic -> browser.ui: "shows chain, targets, reverse route"
+
+source.csv -> build.script: "item name + ID"
+build.script -> browser.catalog: "generates static catalog"

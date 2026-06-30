@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#16130f" />
+    <title>Spin Down Dice Tracker</title>
+    <link rel="stylesheet" href="src/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="command-panel" aria-label="Spin Down controls">
+        <div class="brand">
+          <div>
+            <p class="eyebrow">Spin Down Dice helper</p>
+            <h1>Spin Down Dice Tracker</h1>
+          </div>
+          <div class="dice-mark" aria-hidden="true">6</div>
+        </div>
+
+        <div class="input-grid">
+          <label class="combo-wrap">
+            <span>Seen item</span>
+            <div class="combo" data-combo="shop">
+              <input
+                id="shopInput"
+                autocomplete="off"
+                placeholder="Type an item, press Enter"
+                aria-expanded="false"
+                aria-controls="shopSuggestions"
+              />
+              <button id="addShop" type="button">Check 20s</button>
+              <div id="shopSuggestions" class="suggestions" role="listbox"></div>
+            </div>
+          </label>
+
+          <label class="combo-wrap">
+            <span>Target item</span>
+            <div class="combo" data-combo="target">
+              <input
+                id="targetInput"
+                autocomplete="off"
+                placeholder="Sacred Heart, Godhead, C Section..."
+                aria-expanded="false"
+                aria-controls="targetSuggestions"
+              />
+              <button id="addTarget" type="button">Watch</button>
+              <div id="targetSuggestions" class="suggestions" role="listbox"></div>
+            </div>
+          </label>
+        </div>
+
+        <div class="control-row">
+          <label class="range-wrap">
+            <span>Chain length</span>
+            <input id="depthInput" type="range" min="5" max="120" value="12" />
+            <strong id="depthValue">12</strong>
+          </label>
+          <button id="clearAll" type="button" class="ghost">Clear checks</button>
+        </div>
+
+        <div id="targetChips" class="chips" aria-label="Target items"></div>
+      </section>
+
+      <section id="targetPlanner" class="target-planner" aria-label="Target route planner">
+        <div class="planner-head">
+          <p class="eyebrow">Reverse route</p>
+          <h2 id="plannerTitle">Click a target item</h2>
+          <button
+            id="togglePlanner"
+            class="planner-toggle"
+            type="button"
+            aria-expanded="true"
+            aria-controls="reversePlanner"
+          >
+            Hide routes
+          </button>
+        </div>
+        <div id="reversePlanner" class="reverse-planner"></div>
+      </section>
+
+      <section id="tracker" class="tracker" aria-live="polite"></section>
+
+      <footer class="site-notice">
+        Unofficial fan helper — not affiliated with Nicalis, Edmund McMillen, or the owners of
+        The Binding of Isaac. Search keywords courtesy of
+        <a href="https://isaacguru.com" rel="noopener" target="_blank">isaacguru.com</a>;
+        game sprites &copy; Nicalis / Edmund McMillen. See <a href="NOTICE.md">notices</a>.
+      </footer>
+    </main>
+
+    <template id="emptyTemplate">
+      <div class="empty">
+        <div class="empty-orbit"></div>
+        <h2>Type any item you see.</h2>
+        <p>
+          Temporary checks clear after 20 seconds unless you keep them.
+        </p>
+      </div>
+    </template>
+
+    <script src="src/data/items.js"></script>
+    <script src="src/app.js"></script>
+  </body>
+</html>
