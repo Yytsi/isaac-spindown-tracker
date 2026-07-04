@@ -232,11 +232,32 @@ function addTracked(item, options = {}) {
     state.tracked = [existing, ...state.tracked.filter((entry) => entry.id !== item.id)];
     save();
     render();
+    playGridFx(item);
     return;
   }
   state.tracked.unshift({ id: item.id, pinned, createdAt: Date.now() });
   save();
   render();
+  playGridFx(item);
+}
+
+function playGridFx(item) {
+  const fx = window.GridFX;
+  const flash = () => {
+    const card = document.querySelector(`[data-card-id="${item.id}"]`);
+    if (!card) return;
+    card.classList.add("is-landed");
+    setTimeout(() => card.classList.remove("is-landed"), 1200);
+  };
+  if (!fx) {
+    flash();
+    return;
+  }
+  fx.play({
+    originId: item.id,
+    chainIds: chainFrom(item.id, state.depth).map((chained) => chained.id),
+    targetIds: state.targets,
+  }).then(flash);
 }
 
 function addTarget(item) {
@@ -420,7 +441,7 @@ function renderTracker() {
       const nearest = hits[0];
       const remaining = secondsLeft(entry);
       return `
-      <article class="track-card ${entry.pinned ? "is-pinned" : "is-temporary"}">
+      <article class="track-card ${entry.pinned ? "is-pinned" : "is-temporary"}" data-card-id="${id}">
         <header class="track-head">
           <div class="start-item">
             <img src="${start.image}" alt="" />
@@ -589,3 +610,21 @@ setInterval(() => {
   cleanupExpired();
   updateCountdowns();
 }, 1000);
+
+// Dev/demo hook: ?fxdemo replays the grid animation on load.
+// An optional value fast-forwards into the timeline, e.g. ?fxdemo=1400.
+const fxdemo = new URLSearchParams(location.search).get("fxdemo");
+if (fxdemo !== null) {
+  setTimeout(() => {
+    const item = byId.get(441) || items[Math.floor(items.length / 2)];
+    addTracked(item);
+    if (Number(fxdemo) > 0) {
+      window.GridFX?.play({
+        originId: item.id,
+        chainIds: chainFrom(item.id, state.depth).map((chained) => chained.id),
+        targetIds: state.targets,
+        seekTo: Number(fxdemo),
+      });
+    }
+  }, 700);
+}
