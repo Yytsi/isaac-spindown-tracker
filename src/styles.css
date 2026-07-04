@@ -814,6 +814,29 @@ input[type="range"] {
   white-space: nowrap;
 }
 
+.gridfx-actions button.is-selected {
+  outline: 2px solid rgba(95, 189, 208, 0.9);
+  outline-offset: 2px;
+}
+
+.gridfx-actions kbd {
+  margin-left: 6px;
+  border-radius: 4px;
+  padding: 2px 6px;
+  background: rgba(0, 0, 0, 0.22);
+  font: 800 11px/1 ui-monospace, Menlo, monospace;
+}
+
+.gridfx-stay kbd {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+@media (hover: none) {
+  .gridfx-actions kbd {
+    display: none;
+  }
+}
+
 .gridfx-view {
   background: var(--gold);
   color: #20140d;

@@ -193,11 +193,11 @@
     const viewButton = document.createElement("button");
     viewButton.type = "button";
     viewButton.className = "gridfx-view";
-    viewButton.textContent = "View item";
+    viewButton.innerHTML = "View item <kbd>&#9166;</kbd>";
     const stayButton = document.createElement("button");
     stayButton.type = "button";
     stayButton.className = "gridfx-stay";
-    stayButton.textContent = "Keep typing";
+    stayButton.innerHTML = "Keep typing <kbd>Esc</kbd>";
     actions.append(viewButton, stayButton);
     overlay.append(canvas, actions);
     document.body.append(overlay);
@@ -234,7 +234,14 @@
     let actionsOpen = false;
     let released = false;
     let choice = "stay";
+    let selected = "view";
     let holdTimer = 0;
+
+    function setSelected(which) {
+      selected = which;
+      viewButton.classList.toggle("is-selected", which === "view");
+      stayButton.classList.toggle("is-selected", which === "stay");
+    }
     let start = performance.now() - (Number(seekTo) || 0);
 
     // The timeline pauses on the docked strip until the user picks an
@@ -313,6 +320,7 @@
         if (t >= tSettle && !actionsOpen) {
           actionsOpen = true;
           actions.classList.add("is-open");
+          setSelected("view");
           holdTimer = setTimeout(() => choose("stay"), 4200);
         }
         if (t >= tOut) t = tOut - 1;
@@ -482,7 +490,18 @@
     }
 
     function onKey(event) {
-      if (event.key === "Escape") dismiss();
+      if (event.key === "Escape") {
+        dismiss();
+        return;
+      }
+      if (!actionsOpen || released) return;
+      if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+        event.preventDefault();
+        setSelected(selected === "view" ? "stay" : "view");
+      } else if (event.key === "Enter") {
+        event.preventDefault();
+        choose(selected);
+      }
     }
 
     function onAction(event, picked) {
@@ -493,6 +512,8 @@
 
     viewButton.addEventListener("pointerdown", (event) => onAction(event, "view"));
     stayButton.addEventListener("pointerdown", (event) => onAction(event, "stay"));
+    viewButton.addEventListener("pointerenter", () => setSelected("view"));
+    stayButton.addEventListener("pointerenter", () => setSelected("stay"));
     overlay.addEventListener("pointerdown", onBackdrop);
     window.addEventListener("keydown", onKey);
     active = { finish, dismiss };
