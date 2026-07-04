@@ -258,13 +258,26 @@ function playGridFx(item) {
     chainIds: chainFrom(item.id, state.depth).map((chained) => chained.id),
     targetIds: state.targets,
   }).then((choice) => {
+    // The animation and hold shouldn't eat into the 20s check window.
+    const entry = state.tracked.find((tracked) => tracked.id === item.id);
+    if (entry && !entry.pinned) {
+      entry.createdAt = Date.now();
+      save();
+      updateCountdowns();
+    }
     flash();
     if (choice === "view") {
       els.shopInput.blur();
       els.targetInput.blur();
-      document
-        .querySelector(`[data-card-id="${item.id}"]`)
-        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+      const card = document.querySelector(`[data-card-id="${item.id}"]`);
+      if (!card) return;
+      const chain = card.querySelector(".chain");
+      const resetChain = () => {
+        if (chain) chain.scrollLeft = 0;
+      };
+      resetChain();
+      card.scrollIntoView({ behavior: "smooth", block: "center" });
+      setTimeout(resetChain, 650);
     }
   });
 }
