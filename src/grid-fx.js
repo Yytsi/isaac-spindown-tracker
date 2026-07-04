@@ -3,8 +3,6 @@
 // typed item, carves out its spin-down chain, and docks it as a strip at the
 // bottom of the visible viewport (above the keyboard on mobile).
 (() => {
-  "use strict";
-
   const data = window.ISAAC_SPINDOWN_DATA;
   if (!data) return;
 
