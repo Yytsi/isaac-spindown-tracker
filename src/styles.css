@@ -788,6 +788,44 @@ input[type="range"] {
   height: 100%;
 }
 
+.gridfx-actions {
+  position: absolute;
+  bottom: 106px;
+  left: 50%;
+  display: flex;
+  gap: 10px;
+  transform: translate(-50%, 10px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 190ms ease, transform 190ms ease;
+}
+
+.gridfx-actions.is-open {
+  transform: translate(-50%, 0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.gridfx-actions button {
+  border: 0;
+  border-radius: 8px;
+  padding: 11px 18px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.gridfx-view {
+  background: var(--gold);
+  color: #20140d;
+  box-shadow: 0 6px 22px rgba(245, 184, 75, 0.35);
+}
+
+.gridfx-stay {
+  border: 1px solid var(--line);
+  background: rgba(20, 15, 11, 0.92);
+  color: var(--ink);
+}
+
 .track-card.is-landed {
   animation: landed 1.1s ease;
 }

@@ -188,7 +188,18 @@
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = width * dpr;
     canvas.height = height * dpr;
-    overlay.append(canvas);
+    const actions = document.createElement("div");
+    actions.className = "gridfx-actions";
+    const viewButton = document.createElement("button");
+    viewButton.type = "button";
+    viewButton.className = "gridfx-view";
+    viewButton.textContent = "View item";
+    const stayButton = document.createElement("button");
+    stayButton.type = "button";
+    stayButton.className = "gridfx-stay";
+    stayButton.textContent = "Keep typing";
+    actions.append(viewButton, stayButton);
+    overlay.append(canvas, actions);
     document.body.append(overlay);
     requestAnimationFrame(() => {
       overlay.style.opacity = "1";
@@ -220,7 +231,22 @@
     let frame = 0;
     let done = false;
     let fadeOutStarted = false;
-    const start = performance.now() - (Number(seekTo) || 0);
+    let actionsOpen = false;
+    let released = false;
+    let choice = "stay";
+    let holdTimer = 0;
+    let start = performance.now() - (Number(seekTo) || 0);
+
+    // The timeline pauses on the docked strip until the user picks an
+    // action (or the hold times out); choose() resumes it at the OUT phase.
+    function choose(picked) {
+      if (done || released) return;
+      released = true;
+      choice = picked;
+      clearTimeout(holdTimer);
+      actions.classList.remove("is-open");
+      start = performance.now() - tOut;
+    }
 
     function cursorAt(t) {
       if (t >= tLock || pathLen === 0) {
@@ -282,7 +308,15 @@
 
     function draw(now) {
       if (done) return;
-      const t = now - start;
+      let t = now - start;
+      if (!released) {
+        if (t >= tSettle && !actionsOpen) {
+          actionsOpen = true;
+          actions.classList.add("is-open");
+          holdTimer = setTimeout(() => choose("stay"), 4200);
+        }
+        if (t >= tOut) t = tOut - 1;
+      }
       if (t >= tEnd) {
         finish();
         return;
@@ -428,24 +462,46 @@
       if (done) return;
       done = true;
       cancelAnimationFrame(frame);
-      overlay.removeEventListener("pointerdown", finish);
+      clearTimeout(holdTimer);
+      overlay.removeEventListener("pointerdown", onBackdrop);
       window.removeEventListener("keydown", onKey);
       overlay.style.opacity = "0";
       setTimeout(() => overlay.remove(), 180);
       active = null;
-      resolvePlay();
+      resolvePlay(choice);
+    }
+
+    function dismiss() {
+      if (done) return;
+      if (actionsOpen && !released) choose("stay");
+      else if (!released) finish();
+    }
+
+    function onBackdrop() {
+      dismiss();
     }
 
     function onKey(event) {
-      if (event.key === "Escape") finish();
+      if (event.key === "Escape") dismiss();
     }
 
-    overlay.addEventListener("pointerdown", finish);
+    function onAction(event, picked) {
+      event.preventDefault();
+      event.stopPropagation();
+      choose(picked);
+    }
+
+    viewButton.addEventListener("pointerdown", (event) => onAction(event, "view"));
+    stayButton.addEventListener("pointerdown", (event) => onAction(event, "stay"));
+    overlay.addEventListener("pointerdown", onBackdrop);
     window.addEventListener("keydown", onKey);
-    active = { finish };
+    active = { finish, dismiss };
     frame = requestAnimationFrame(draw);
     return promise;
   }
 
-  window.GridFX = { play };
+  window.GridFX = {
+    play,
+    dismiss: () => active?.dismiss(),
+  };
 })();

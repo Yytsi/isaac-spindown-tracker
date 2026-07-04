@@ -257,7 +257,16 @@ function playGridFx(item) {
     originId: item.id,
     chainIds: chainFrom(item.id, state.depth).map((chained) => chained.id),
     targetIds: state.targets,
-  }).then(flash);
+  }).then((choice) => {
+    flash();
+    if (choice === "view") {
+      els.shopInput.blur();
+      els.targetInput.blur();
+      document
+        .querySelector(`[data-card-id="${item.id}"]`)
+        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  });
 }
 
 function addTarget(item) {
@@ -511,7 +520,10 @@ function render() {
 }
 
 function wireCombo(input, panel, mode) {
-  input.addEventListener("input", () => renderSuggestions(input, panel, mode));
+  input.addEventListener("input", () => {
+    window.GridFX?.dismiss();
+    renderSuggestions(input, panel, mode);
+  });
   input.addEventListener("focus", () => renderSuggestions(input, panel, mode));
   input.addEventListener("keydown", (event) => {
     const buttons = [...panel.querySelectorAll(".suggestion")];
