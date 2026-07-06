@@ -2,6 +2,8 @@
 
 **Live at [isaac-spindown-tracker.pages.dev](https://isaac-spindown-tracker.pages.dev/)**
 
+![Typing an item and seeing how many spins away each target is](docs/demo.gif)
+
 A small static helper for _The Binding of Isaac: Repentance_ Spin Down Dice runs.
 
 Type any item pedestal you see, and the page shows the next items in Spin Down order. Add target items such as Sacred Heart, Godhead, or Glitched Crown, and each temporary check highlights whether one of those targets is coming up.
