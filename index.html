@@ -15,7 +15,23 @@
             <p class="eyebrow">Spin Down Dice helper</p>
             <h1>Spin Down Dice Tracker</h1>
           </div>
-          <div class="dice-mark" aria-hidden="true">6</div>
+          <div class="brand-tools">
+            <button
+              id="openSettings"
+              type="button"
+              class="settings-button"
+              aria-label="Settings"
+              aria-haspopup="dialog"
+            >
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                <path
+                  fill="currentColor"
+                  d="M12 8.4a3.6 3.6 0 1 0 0 7.2 3.6 3.6 0 0 0 0-7.2Zm9.4 5.03c.04-.34.07-.68.07-1.03 0-.35-.03-.7-.08-1.03l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96a7.06 7.06 0 0 0-1.78-1.03l-.36-2.54a.48.48 0 0 0-.48-.41h-3.84a.48.48 0 0 0-.47.41l-.36 2.54c-.65.26-1.24.62-1.79 1.03l-2.39-.96a.48.48 0 0 0-.59.22L2.66 9.18a.48.48 0 0 0 .12.61l2.03 1.58a7.9 7.9 0 0 0 0 2.06l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.21.37.3.59.22l2.39-.96c.55.42 1.14.77 1.79 1.03l.36 2.54c.04.24.24.41.47.41h3.84c.24 0 .44-.17.48-.41l.36-2.54a6.86 6.86 0 0 0 1.78-1.03l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.49.49 0 0 0-.12-.61l-2.02-1.58Z"
+                />
+              </svg>
+            </button>
+            <div class="dice-mark" aria-hidden="true">6</div>
+          </div>
         </div>
 
         <div class="input-grid">
@@ -90,6 +106,25 @@
         <a href="https://github.com/Yytsi/isaac-spindown-tracker" rel="noopener" target="_blank">GitHub</a>.
       </footer>
     </main>
+
+    <dialog id="settingsModal" class="settings-modal" aria-labelledby="settingsTitle">
+      <form method="dialog">
+        <header class="settings-head">
+          <div>
+            <p class="eyebrow">Preferences</p>
+            <h2 id="settingsTitle">Settings</h2>
+          </div>
+          <button value="close" class="icon-button" aria-label="Close settings">x</button>
+        </header>
+        <label class="setting-row">
+          <span class="setting-copy">
+            <strong>Item grid animation</strong>
+            <small>Sweep the full collection when you check an item. Turn off to add items instantly.</small>
+          </span>
+          <input id="fxToggle" type="checkbox" class="switch" checked />
+        </label>
+      </form>
+    </dialog>
 
     <template id="emptyTemplate">
       <div class="empty">

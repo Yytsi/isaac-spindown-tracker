@@ -119,6 +119,29 @@ h3 {
   line-height: 1;
 }
 
+.brand-tools {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.settings-button {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--muted);
+  transition: color 0.18s ease, transform 0.3s ease;
+}
+
+.settings-button:hover {
+  color: var(--gold);
+  transform: rotate(30deg);
+}
+
 .dice-mark {
   display: grid;
   width: 54px;
@@ -860,6 +883,115 @@ input[type="range"] {
   100% {
     box-shadow: 0 18px 45px rgba(0, 0, 0, 0.3);
   }
+}
+
+.track-card.is-landed .keep-button {
+  animation: keep-pulse 0.9s ease 0.15s;
+}
+
+@keyframes keep-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  35% {
+    border-color: var(--blue);
+    background: rgba(95, 189, 208, 0.28);
+    transform: scale(1.09);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track-card.is-landed .keep-button {
+    animation: none;
+  }
+}
+
+.settings-modal {
+  width: min(440px, calc(100vw - 40px));
+  margin: auto;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: linear-gradient(150deg, rgba(41, 31, 21, 0.98), rgba(20, 16, 12, 0.98));
+  color: var(--ink);
+  box-shadow: var(--shadow);
+}
+
+.settings-modal::backdrop {
+  background: rgba(10, 7, 5, 0.62);
+  backdrop-filter: blur(3px);
+}
+
+.settings-modal form {
+  padding: 20px;
+}
+
+.settings-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.settings-head h2 {
+  margin-bottom: 0;
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+}
+
+.setting-copy {
+  display: grid;
+  gap: 4px;
+}
+
+.setting-copy small {
+  color: var(--muted);
+}
+
+.switch {
+  flex-shrink: 0;
+  width: 46px;
+  height: 26px;
+  margin: 0;
+  appearance: none;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.32);
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.switch::before {
+  display: block;
+  width: 18px;
+  height: 18px;
+  margin: 3px;
+  border-radius: 50%;
+  background: var(--muted);
+  content: "";
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+
+.switch:checked {
+  border-color: rgba(245, 184, 75, 0.6);
+  background: rgba(245, 184, 75, 0.28);
+}
+
+.switch:checked::before {
+  background: var(--gold);
+  transform: translateX(20px);
 }
 
 @media (max-width: 860px) {

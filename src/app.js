@@ -16,7 +16,12 @@ const state = {
   selectedTarget: Number(localStorage.getItem("spindown-selected-target")) || null,
   plannerOpen: localStorage.getItem("spindown-planner-open") === "true",
   depth: Number(localStorage.getItem("spindown-depth") || 12),
+  fxEnabled: localStorage.getItem("spindown-fx-enabled") !== "false",
 };
+
+// While a grid animation (and its hold state) is on screen, every countdown
+// freezes so temporary checks can't silently expire behind the overlay.
+let fxHolds = 0;
 
 if (!byId.has(state.selectedTarget)) {
   state.selectedTarget = state.targets[0] || null;
@@ -39,6 +44,9 @@ const els = {
   reversePlanner: document.querySelector("#reversePlanner"),
   tracker: document.querySelector("#tracker"),
   emptyTemplate: document.querySelector("#emptyTemplate"),
+  openSettings: document.querySelector("#openSettings"),
+  settingsModal: document.querySelector("#settingsModal"),
+  fxToggle: document.querySelector("#fxToggle"),
 };
 
 els.depthInput.value = state.depth;
@@ -91,6 +99,7 @@ function save() {
   localStorage.setItem("spindown-selected-target", String(state.selectedTarget || ""));
   localStorage.setItem("spindown-planner-open", String(state.plannerOpen));
   localStorage.setItem("spindown-depth", String(state.depth));
+  localStorage.setItem("spindown-fx-enabled", String(state.fxEnabled));
 }
 
 function itemForText(text) {
@@ -249,22 +258,28 @@ function playGridFx(item) {
     card.classList.add("is-landed");
     setTimeout(() => card.classList.remove("is-landed"), 1200);
   };
-  if (!fx) {
+  if (!fx || !state.fxEnabled) {
     flash();
     return;
   }
+  const pausedAt = Date.now();
+  fxHolds += 1;
   fx.play({
     originId: item.id,
     chainIds: chainFrom(item.id, state.depth).map((chained) => chained.id),
     targetIds: state.targets,
   }).then((choice) => {
-    // The animation and hold shouldn't eat into the 20s check window.
-    const entry = state.tracked.find((tracked) => tracked.id === item.id);
-    if (entry && !entry.pinned) {
-      entry.createdAt = Date.now();
-      save();
-      updateCountdowns();
+    fxHolds = Math.max(0, fxHolds - 1);
+    // The animation and hold shouldn't eat into any 20s check window:
+    // shift the other checks by the paused duration, restart this one.
+    const pausedFor = Date.now() - pausedAt;
+    for (const tracked of state.tracked) {
+      if (!tracked.pinned && tracked.id !== item.id) tracked.createdAt += pausedFor;
     }
+    const entry = state.tracked.find((tracked) => tracked.id === item.id);
+    if (entry && !entry.pinned) entry.createdAt = Date.now();
+    save();
+    updateCountdowns();
     flash();
     if (choice === "view") {
       els.shopInput.blur();
@@ -630,8 +645,22 @@ document.addEventListener("click", (event) => {
   if (!event.target.closest(".combo")) closeSuggestions();
 });
 
+els.openSettings.addEventListener("click", () => {
+  els.fxToggle.checked = state.fxEnabled;
+  els.settingsModal.showModal();
+});
+els.fxToggle.addEventListener("change", () => {
+  state.fxEnabled = els.fxToggle.checked;
+  save();
+});
+els.settingsModal.addEventListener("click", (event) => {
+  // The dialog's own box swallows clicks; only backdrop clicks land here.
+  if (event.target === els.settingsModal) els.settingsModal.close();
+});
+
 render();
 setInterval(() => {
+  if (fxHolds) return;
   cleanupExpired();
   updateCountdowns();
 }, 1000);
