@@ -195,7 +195,7 @@
     const stayButton = document.createElement("button");
     stayButton.type = "button";
     stayButton.className = "gridfx-stay";
-    stayButton.innerHTML = "Keep typing <kbd>Esc</kbd>";
+    stayButton.innerHTML = "Add more <kbd>Esc</kbd>";
     actions.append(viewButton, stayButton);
     overlay.append(canvas, actions);
     document.body.append(overlay);
